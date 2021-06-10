@@ -15,12 +15,13 @@ use Illuminate\Support\Facades\Route;
 */
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\PostController;
+use App\Http\Controllers\AdminPostController;
 use App\Http\Controllers\API\CommentController;
 
 
 Route::post('/registerLogin',[UserController::class,'registerLogin']);
 Route::get('/categories',[UserController::class,'getAllCategories']);
-
+Route::get('/admin-post',[AdminPostController::class,'allPost']);
 
 Route::middleware('auth:api')->group(function(){
     Route::post('/user',[UserController::class,'updateUserInfo']);

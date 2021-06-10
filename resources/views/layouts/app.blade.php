@@ -6,7 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 	<meta name="description" content="">
 	<meta name="author" content="">
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ 'Blessing Online | Admin Dashboard' }}</title>
 
 	<link rel="stylesheet" href="{{asset('assets/styles/style.min.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/fonts/themify-icons/themify-icons.css')}}">

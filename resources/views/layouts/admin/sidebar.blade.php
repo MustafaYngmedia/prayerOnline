@@ -10,17 +10,27 @@
 			</ul>
             <ul class="menu js__accordion">
 				<li>
-					<a  class="waves-effect parent-item js__control" href="{{route('users.list')}}"><i class="menu-icon ti-flag"></i><span>Users</span>
+					<a  class="waves-effect parent-item js__control" href="{{route('users.list')}}"></i><span>Users</span>
 						<!-- <span class="menu-arrow fa fa-angle-down"></span> -->
 					</a>
 				</li>
 			</ul>
+			<!-- <i class="menu-icon ti-flag"> -->
 			<ul class="menu js__accordion">
 				<li>
-					<a class="waves-effect parent-item js__control" href="#"><i class="menu-icon ti-flag"></i><span>Admin</span><span class="menu-arrow fa fa-angle-down"></span></a>
+					<a class="waves-effect parent-item js__control" href="#"></i><span>Admin</span><span class="menu-arrow fa fa-angle-down"></span></a>
 					<ul class="sub-menu js__content">
 						<li><a href="{{route('admin.add')}}">Add</a></li>
 						<li><a href="{{route('admin.list')}}">Manage</a></li>
+					</ul>
+				</li>
+			</ul>
+			<ul class="menu js__accordion">
+				<li>
+					<a class="waves-effect parent-item js__control" href="#"></i><span>Admin Posts</span><span class="menu-arrow fa fa-angle-down"></span></a>
+					<ul class="sub-menu js__content">
+						<li><a href="{{route('admin-post.add')}}">Add</a></li>
+						<li><a href="{{route('admin-post.list')}}">Manage</a></li>
 					</ul>
 				</li>
 			</ul>

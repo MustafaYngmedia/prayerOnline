@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\AdminPostController;
+
 Auth::routes();
 Route::get('/',[LoginController::class,'login']);
 
@@ -31,6 +33,14 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/admin/store',[App\Http\Controllers\HomeController::class, 'storeAdmin'])->name('admin.store');
     Route::get('/admin/list',[App\Http\Controllers\HomeController::class, 'listAdminUsers'])->name('admin.list');
     Route::get('/admin/{id}',[App\Http\Controllers\HomeController::class, 'editAdmin'])->name('admin.edit');
+
+    
+    Route::get('/admin-post/add',[AdminPostController::class, 'editPost'])->name('admin-post.add');
+    Route::post('/admin-post/store',[AdminPostController::class, 'storePost'])->name('admin-post.store');
+    Route::get('/admin-post/list',[AdminPostController::class, 'listPosts'])->name('admin-post.list');
+    Route::get('/admin-post/delete/{id}',[AdminPostController::class, 'deletePosts'])->name('admin-post.delete');
+    Route::get('/admin-post/{id}',[AdminPostController::class, 'editPost'])->name('admin-post.edit');
+    
 });
 
 
