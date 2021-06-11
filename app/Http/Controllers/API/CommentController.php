@@ -81,7 +81,8 @@ class CommentController extends Controller
     }
     public function commentLike(Request $request){
         $parent_comment = ParentComment::findOrFail($request->comment_id);
-        $isExists = ParentCommentLike::where(['comment_id'=>$request->comment_id,'user_id'=>$request->user()->id,'type'=>0])->count();
+//dd($parent_comment);
+ $isExists = ParentCommentLike::where(['comment_id'=>$request->comment_id,'user_id'=>$request->user()->id,'type'=>0])->count();
         if($isExists > 0){
             return api()->validation('Like Already Exist');
         }
@@ -95,7 +96,7 @@ class CommentController extends Controller
         ]);
         $request->user()->logs()->create([
             'type'=>4,
-            'post_id'=>$request->post_id,
+            'post_id'=>$parent_comment->post_id,
         ]);
         return api()->ok('Like Added',$parent_comment);
     }

@@ -27,7 +27,6 @@ Route::group(['middleware' => 'auth'], function () {
     // Route::post('/users/store',[App\Http\Controllers\HomeController::class, 'storeUser'])->name('users.store');
     // Route::get('/users/{id}',[App\Http\Controllers\HomeController::class, 'editUser'])->name('users.edit');
 
-
     Route::get('/users/list',[App\Http\Controllers\HomeController::class, 'listUsers'])->name('users.list');
     Route::get('/admin/add',[App\Http\Controllers\HomeController::class, 'editUser'])->name('admin.add');
     Route::post('/admin/store',[App\Http\Controllers\HomeController::class, 'storeAdmin'])->name('admin.store');
@@ -44,4 +43,4 @@ Route::group(['middleware' => 'auth'], function () {
 });
 
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+//Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

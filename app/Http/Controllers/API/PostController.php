@@ -48,11 +48,11 @@ class PostController extends Controller
 
     public function userPosts(Request $request){
         $user_id = $request->user()->id;
-        $posts = Post::where('user_id',$user_id)->latest()->get();
+        $posts = Post::where('user_id',$user_id)->latest()->paginate(10);
         return api()->ok('User Posts',$posts);
     }
     public function getPost(Request $request,$id){
-        $post = Post::with(['user','category'])->find($id);
+        $post = Post::with(['user','category','user_like'])->find($id);
         return api()->ok('Post Id:'.$id,$post);
     }
     public function likePost(Request $request){
@@ -79,9 +79,9 @@ class PostController extends Controller
     }
     public function allPost(Request $request){
         if($request->country){
-            $all_post = Post::where('country',$request->country);
+            $all_post = Post::with(['user','user_like'])->where('country',$request->country);
         }else{
-            $all_post = Post::where('country',$request->user()->country);
+            $all_post = Post::with(['user','user_like'])->where('country',$request->user()->country);
         }
 
         $all_post = $all_post->latest()->paginate(10);
