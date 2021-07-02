@@ -24,7 +24,8 @@ class User extends Authenticatable
         'mobile',
         'country',
         'country_code',
-        'password'
+        'password',
+	'isAdmin'
     ];
 
     /**

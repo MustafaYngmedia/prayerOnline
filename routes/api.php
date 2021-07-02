@@ -21,14 +21,17 @@ use App\Http\Controllers\API\CommentController;
 
 Route::post('/registerLogin',[UserController::class,'registerLogin']);
 Route::get('/categories',[UserController::class,'getAllCategories']);
-Route::get('/admin-post',[AdminPostController::class,'allPost']);
-
+Route::get('/countries',[UserController::class,'getAllCountries']);
+//Route::get('/admin-post',[AdminPostController::class,'allPost']);
+Route::post('/all-phone-numbers',[UserController::class,'allPhoneNumber'])->middleware('auth:api');
 Route::middleware('auth:api')->group(function(){
     Route::post('/user',[UserController::class,'updateUserInfo']);
     Route::get('/user',[UserController::class,'getUserInfo']);
     Route::post('/user/logout',[UserController::class,'logoutUser']);
     Route::get('/user/activity',[UserController::class,'userActivity']);
     Route::get('/user/post',[PostController::class,'userPosts']);
+Route::post('/user/remove-profile',[UserController::class,'removeProfilePhoto']);
+Route::get('/admin-post',[AdminPostController::class,'allPost']);
 
 
     Route::get('/post',[PostController::class,'allPost']);
@@ -37,6 +40,7 @@ Route::middleware('auth:api')->group(function(){
     Route::post('/post/comment/like',[CommentController::class,'commentLike']);
     Route::post('/post/sub-comment/like',[CommentController::class,'subCommentLike']);
 
+    Route::post('/post/delete/{id}',[PostController::class,'deletePost']);
     Route::post('/post/{id}',[PostController::class,'newPost']);
     Route::get('/post/{id}',[PostController::class,'getPost']);
 

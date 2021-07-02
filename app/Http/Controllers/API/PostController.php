@@ -11,7 +11,7 @@ use App\Models\PostLike;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Validator;
-
+use Carbon\Carbon;
 
 
 class PostController extends Controller
@@ -23,7 +23,6 @@ class PostController extends Controller
             'color'=>'required',
             'country'=>'required',
         ]);
-        
         if($validator->fails()) {
             return api()->validation('Validation Error',$validator->messages());
         }
@@ -48,21 +47,31 @@ class PostController extends Controller
 
     public function userPosts(Request $request){
         $user_id = $request->user()->id;
-        $posts = Post::where('user_id',$user_id)->latest()->paginate(10);
+        $posts = Post::with(['user_like'])->where('user_id',$user_id)->latest()->paginate(10);
         return api()->ok('User Posts',$posts);
     }
     public function getPost(Request $request,$id){
-        $post = Post::with(['user','category','user_like'])->find($id);
-        return api()->ok('Post Id:'.$id,$post);
+        $post = Post::with(['user','category','user_like'])->find($id);     
+   return api()->ok('Post Id:'.$id,$post);
     }
+public function deletePost(Request $request,$id){
+$post = Post::find($id);
+if($post == null){
+	return api()->error('Cannot Find Post');
+}
+$post->delete();
+return api()->ok('Post Deleted',$post);
+}
     public function likePost(Request $request){
         $request->validate([
             'post_id'=>'required',
         ]);
         $post = Post::findOrFail($request->post_id);
-        $isExists = PostLike::where(['post_id'=>$request->post_id,'user_id'=>$request->user()->id])->count();
-        if($isExists > 0){
-            return api()->validation('Like Already Exist');
+        $isExists = PostLike::where(['post_id'=>$request->post_id,'user_id'=>$request->user()->id])->first();
+        if($isExists != null){
+		$isExists->delete();
+		Post::find($request->post_id)->decrement('total_likes');
+	 return api()->ok('Post Unliked');
         }
         $post->increment('total_likes'); 
         $post->save();
@@ -78,13 +87,26 @@ class PostController extends Controller
         return api()->ok('Like Added',$post);
     }
     public function allPost(Request $request){
-        if($request->country){
-            $all_post = Post::with(['user','user_like'])->where('country',$request->country);
-        }else{
-            $all_post = Post::with(['user','user_like'])->where('country',$request->user()->country);
-        }
+        $all_post = Post::with(['user','user_like']);
+	if($request->from != "" && $request->to != ""){
+		$date_from = Carbon::parse($request->input('from'))->startOfDay();
+		$date_to = Carbon::parse($request->input('to'))->endOfDay();
+		$all_post = $all_post->whereBetween('created_at',[$date_from,$date_to]);
+	}
+if($request->category_id){
+	$all_post = $all_post->where('category_id',$request->category_id);
+}
+if($request->country){
+	$all_post = $all_post->where('country',$request->country);
+}
+//	if($request->country){
+  //          $all_post = Post::with(['user','user_like'])->where('country',$request->country);
+   //     }else{B
+    //        $all_post = Post::with(['user','user_like'])->where('country',$request->user()->country);
+     //   }
 
         $all_post = $all_post->latest()->paginate(10);
         return api()->ok('Latest Post',$all_post);
     }
 }
+

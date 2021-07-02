@@ -35,8 +35,8 @@
                                 <tr>
                                     <td>{{$u->id}}</td>
                                     <td>{{$u->mobile}}</td>
-                                    <td>{{$u->email}}</td>
                                     <td>{{$u->name}}</td>
+                                    <td>{{$u->email}}</td>
                                     <td>
 									@if($u->status == 1)
                               			<span class="badge bg-success">Active</span>

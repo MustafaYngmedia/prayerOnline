@@ -14,11 +14,15 @@ use Validator;
 class CommentController extends Controller
 {
     public function getPostComment(Request $request,$id){
-        $comments = ParentComment::with(['user','sub_comment'])->where('post_id',$id)->paginate(10);
+        $comments = ParentComment::with(['user','sub_comment'])->where('post_id',$id)->latest()->paginate(10);
+foreach($comments as $c){ $c->readabled = $c->updated_at->diffForHumans(); }
         return api()->ok('Comments',$comments);
     }
     public function getPostSubComment($id){
-        $sub_comments = SubComment::with('user')->where('parent_comment_id',$id)->paginate(10);
+        $sub_comments = SubComment::with('user')->where('parent_comment_id',$id)->latest()->paginate(10);
+foreach($sub_comments as $c){
+$c->readabled = $c->updated_at->diffForHumans();
+}
         return api()->ok('SubComments',$sub_comments);
     }
    public function newParentComment(Request $request,$id=null){

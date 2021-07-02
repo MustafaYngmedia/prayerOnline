@@ -1,9 +1,11 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Models\Post;
+use App\Models\PostLike;
+use App\Models\ParentComment;
+use App\Models\UserActivityLog;
 use App\Models\User;
 use App\Models\UserRole;
 use Illuminate\Support\Facades\Hash;
@@ -37,7 +39,7 @@ class HomeController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function listUsers(Request $request){
-        $data['users'] = User::where('isAdmin',0)->paginate(50);
+        $data['users'] = User::latest()->where('isAdmin',0)->paginate(50);
         return view('user.list',$data);
     }
 
@@ -52,6 +54,11 @@ class HomeController extends Controller
             $data['user'] = User::whereId($id)->first();
         return view('user.edit',$data);
     }
+public function postAll(Request $request){
+$all_posts = Post::with('user')->latest()->get();
+//dd($all_posts);
+return view('post.list',compact('all_posts'));
+}
     public function editAdmin(Request $request,$id = null){
         $data['user'] = null;
         if($id)
@@ -59,24 +66,32 @@ class HomeController extends Controller
         return view('admin.edit',$data);
     }
     public function storeUser(Request $request){
-        $request->validate([
+//dd($request->all());
+      $request->validate([
             'name'=>'required',
-            'email'=>'required|unique:users,email,'.$request->id,
-            'mobile_number'=>'required|unique:users,mobile_number,'.$request->id,
+            'email'=>'required|unique:users,email',
+            'mobile_number'=>'required|unique:users,mobile',
             'status'=>'required'
-        ]);
+	]);
 
+//dd($request->all());
         $newUser = User::updateOrCreate(['id' => $request->id],[
             'name'=>$request->name,
             'email'=>$request->email,
             'status'=>$request->status,
-            'mobile_number'=>$request->mobile_number,
-        ]);
+            'mobile'=>$request->mobile_number,
+        'isAdmin'=>1
+	]);
 
         if($request->password != null) User::updateOrCreate(['id'=>$newUser->id],['password'=> Hash::make($request->password)]);
 
         return back()->with('success','User updated !!');
     }
+public function deletePost(Request $request,$id){
+UserActivityLog::where('post_id',$id)->delete();
+Post::find($id)->delete();
+return back();
+}
     public function storeAdmin(Request $request){
         $request->validate([
             'name'=>'required',
@@ -90,7 +105,8 @@ class HomeController extends Controller
             'email'=>$request->email,
             'status'=>$request->status,
             'mobile'=>$request->mobile_number,
-        ]);
+            'isAdmin'=>1
+	]);
 
         if($request->password != null) User::updateOrCreate(['id'=>$newUser->id],['password'=> Hash::make($request->password)]);
 
@@ -98,7 +114,7 @@ class HomeController extends Controller
     }
     
     /**
-     * @param Request $request
+     * @param Request $requestB
      * @return [type]
      */
     public function searchUser(Request $request){
@@ -122,4 +138,12 @@ class HomeController extends Controller
                 "results"=>$sendData
         ]);
     }
+public function deleteUser(Request $request,$id){
+   $userPost = Post::where('user_id',$id)->delete();
+   $activity = UserActivityLog::where('user_id',$id)->delete();
+   $like  = PostLike::where('user_id',$id)->delete();
+   $parentComment = ParentComment::where('user_id',$id)->delete();
+	User::find($id)->delete();
+return back()->with(['message'=>'Delete User']);
+}
 }

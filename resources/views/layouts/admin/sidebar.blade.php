@@ -9,8 +9,11 @@
 				</li>
 			</ul>
             <ul class="menu js__accordion">
+<li>
+<a class="" href="{{route('posts')}}">Post</a>
+</li>
 				<li>
-					<a  class="waves-effect parent-item js__control" href="{{route('users.list')}}"></i><span>Users</span>
+					<a  class="" href="{{route('users.list')}}"></i><span>Users</span>
 						<!-- <span class="menu-arrow fa fa-angle-down"></span> -->
 					</a>
 				</li>

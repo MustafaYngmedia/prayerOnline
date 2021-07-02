@@ -10,6 +10,6 @@ class UserActivityLog extends Model
     use HasFactory;
     protected $guarded = [];
     public function post(){
-        return $this->hasOne(Post::class,'id','post_id');
+        return $this->hasOne(Post::class,'id','post_id')->with('user');
     }
 }

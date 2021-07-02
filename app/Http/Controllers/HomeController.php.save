@@ -1,0 +1,130 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use App\Models\User;
+use App\Models\UserRole;
+use Illuminate\Support\Facades\Hash;
+
+
+class HomeController extends Controller
+{
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function index()
+    {
+        return view('home');
+    }
+
+    /**
+     * Show all the Users in System
+     * @param Request $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function listUsers(Request $request){
+        $data['users'] = User::where('isAdmin',0)->paginate(50);
+        return view('user.list',$data);
+    }
+
+    public function listAdminUsers(){
+        $data['users'] = User::where('isAdmin',1)->get();
+        return view('admin.list',$data);
+    }
+
+    public function editUser(Request $request,$id = null){
+        $data['user'] = null;
+        if($id)
+            $data['user'] = User::whereId($id)->first();
+        return view('user.edit',$data);
+    }
+    public function editAdmin(Request $request,$id = null){
+        $data['user'] = null;
+        if($id)
+            $data['user'] = User::whereId($id)->first();
+        return view('admin.edit',$data);
+    }
+    public function storeUser(Request $request){
+//dd($request->all());
+      $request->validate([
+            'name'=>'required',
+            'email'=>'required|unique:users,email',
+            'mobile_number'=>'required|unique:users,mobile',
+            'status'=>'required'
+	]);
+
+//dd($request->all());
+        $newUser = User::updateOrCreate(['id' => $request->id],[
+            'name'=>$request->name,
+            'email'=>$request->email,
+            'status'=>$request->status,
+            'mobile'=>$request->mobile_number,
+        'isAdmin'=>1
+	]);
+B
+        if($request->password != null) User::updateOrCreate(['id'=>$newUser->id],['password'=> Hash::make($request->password)]);
+
+        return back()->with('success','User updated !!');
+    }
+    public function storeAdmin(Request $request){
+        $request->validate([
+            'name'=>'required',
+            'email'=>'required|unique:users,email,'.$request->id,
+            'mobile'=>'unique:users,mobile_number,'.$request->id,
+            'status'=>'required'
+        ]);
+
+        $newUser = User::updateOrCreate(['id' => $request->id],[
+            'name'=>$request->name,
+            'email'=>$request->email,
+            'status'=>$request->status,
+            'mobile'=>$request->mobile_number,
+            'isAdmin'=>1
+	]);
+
+        if($request->password != null) User::updateOrCreate(['id'=>$newUser->id],['password'=> Hash::make($request->password)]);
+
+        return back()->with('success','User updated !!');
+    }
+    
+    /**
+     * @param Request $request
+     * @return [type]
+     */
+    public function searchUser(Request $request){
+        $request->validate([
+            '_type'=>'required',
+            'q'=>'required',
+        ]);
+        $q = $request->get('q');
+
+        $users = User::orWhere('name', 'like', '%' . $q . '%')->
+                            orWhere('mobile_number', 'like', '%' . $q . '%')->
+                            orWhere('email', 'like', '%' . $q . '%')->get();
+        $sendData = [];
+        foreach($users as $c){
+            $sendData[] = [
+                'id'=>$c->id,
+                'text'=>$c->name.' - '.$c->mobile_number.' - '.$c->email.' - '.$c->id
+            ];
+        }
+        echo json_encode([
+                "results"=>$sendData
+        ]);
+    }
+public function 
+}

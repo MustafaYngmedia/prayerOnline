@@ -4,12 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\AdminPost;
-
+use Carbon\Carbon;
 class AdminPostController extends Controller
 {
-    public function allPost(){
-        $data['all_posts'] = AdminPost::where('status',1)->paginate(10);
-        return api()->ok('All Post',$data);
+    public function allPost(Request $request){
+        $all_post = AdminPost::where('status',1);
+        if($request->from != "" && $request->to != ""){
+                $date_from = Carbon::parse($request->input('from'))->startOfDay();
+                $date_to = Carbon::parse($request->input('to'))->endOfDay();
+                $all_post = $all_post->whereBetween('created_at',[$date_from,$date_to]);
+        }
+$data["all_posts"] = $all_post->latest()->paginate(10);
+	return api()->ok('All Post',$data);
     }
     public function editPost(Request $request,$id = null){
         $data['post'] = null;
